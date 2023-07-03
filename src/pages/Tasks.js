@@ -5,7 +5,7 @@ export default function Tasks() {
   return (
     <>
       <Navbar />
-      <TaskList />
+      {localStorage.getItem("token") ? <TaskList /> : <></>}
     </>
   );
 }

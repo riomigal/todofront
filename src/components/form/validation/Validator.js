@@ -3,7 +3,7 @@ export default function Validator(props) {
     return (
       <>
         {props.data.errors[props.name].map((element) => {
-          return <p class="text-red-500 text-xs my-2 italic">{element}</p>;
+          return <p className="text-red-500 text-xs my-2 italic">{element}</p>;
         })}
       </>
     );

@@ -1,6 +1,6 @@
 import Validator from "../validation/Validator";
 
-export default function TextInput(props) {
+export default function TextArea(props) {
   return (
     <div>
       <label
@@ -10,13 +10,14 @@ export default function TextInput(props) {
         {props.label}
       </label>
       <div className="mt-2">
-        <input
+        <textarea
+          rows="10"
+          cols="10"
           id={props.id}
           name={props.id}
-          type={props.type}
           required={props.required}
           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        />
+        ></textarea>
       </div>
       {props.data ? <Validator data={props.data} name={props.id} /> : <></>}
       {props.info ? (

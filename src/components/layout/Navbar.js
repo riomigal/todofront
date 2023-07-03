@@ -2,12 +2,13 @@ import { Fragment } from "react";
 import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
+import { logout } from "../services/Requests";
 
 const navigation = [
+  { name: "Tasks", href: "/tasks" },
+  { name: "Add Task", href: "/add-task" },
   { name: "Login", href: "/" },
   { name: "Register", href: "/register" },
-  { name: "Tasks", href: "/tasks" },
-  { name: "Labels", href: "/labels" },
 ];
 
 function classNames(...classes) {
@@ -16,12 +17,15 @@ function classNames(...classes) {
 
 export default function Navbar() {
   function getNavigationMenu() {
+    const token = localStorage.getItem("token");
     return navigation.map(function (item) {
-      if (
-        (item.name === "Login" || item.name === "Register") &&
-        localStorage.getItem("token")
+      if ((item.name === "Login" || item.name === "Register") && token) {
+        return null;
+      } else if (
+        (item.name === "Tasks" || item.name === "Add Task") &&
+        !token
       ) {
-        return <></>;
+        return null;
       }
       return (
         <Link
@@ -43,6 +47,23 @@ export default function Navbar() {
     });
   }
 
+  function getLogoutLink() {
+    if (localStorage.getItem("token")) {
+      return (
+        <Link
+          key="Logout"
+          className={classNames(
+            "text-gray-300 hover:bg-gray-700 hover:text-white",
+            "block rounded-md px-3 py-2 text-base font-medium"
+          )}
+          onClick={logout}
+        >
+          Logout
+        </Link>
+      );
+    }
+  }
+
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -62,7 +83,10 @@ export default function Navbar() {
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="hidden sm:ml-6 sm:block">
-                  <div className="flex space-x-4">{getNavigationMenu()}</div>
+                  <div className="flex space-x-4">
+                    {getNavigationMenu()}
+                    {getLogoutLink()}
+                  </div>
                 </div>
               </div>
             </div>
@@ -71,6 +95,7 @@ export default function Navbar() {
           <Disclosure.Panel className="sm:hidden">
             <div className="space-y-1 px-2 pb-3 pt-2">
               {getNavigationMenu()}
+              {getLogoutLink()}
             </div>
           </Disclosure.Panel>
         </>

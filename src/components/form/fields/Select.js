@@ -1,6 +1,6 @@
 import Validator from "../validation/Validator";
 
-export default function TextInput(props) {
+export default function Select(props) {
   return (
     <div>
       <label
@@ -10,13 +10,21 @@ export default function TextInput(props) {
         {props.label}
       </label>
       <div className="mt-2">
-        <input
+        <select
           id={props.id}
           name={props.id}
-          type={props.type}
           required={props.required}
           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        />
+        >
+          <option value="">{props.optionText}</option>
+          {props.options.map(function (option) {
+            return (
+              <option value={option.id} key={option.id}>
+                {option.name}
+              </option>
+            );
+          })}
+        </select>
       </div>
       {props.data ? <Validator data={props.data} name={props.id} /> : <></>}
       {props.info ? (
