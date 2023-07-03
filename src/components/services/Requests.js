@@ -17,6 +17,11 @@ const config = {
   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
 };
 
+const forceLogoutUser = () => {
+  localStorage.removeItem("token");
+  window.location.href = "/";
+};
+
 export async function register(data) {
   await getSanctum();
 
@@ -51,6 +56,7 @@ export async function login(data) {
 }
 
 export async function logout() {
+  await getSanctum();
   return await apiClient.post("/api/logout", [], config).then((response) => {
     if (response.status === 200) {
       localStorage.removeItem("token");
@@ -60,7 +66,16 @@ export async function logout() {
 }
 
 export function getTasks(queryParams = "") {
-  return apiClient.get("/api/tasks/get?" + queryParams, config);
+  return apiClient.get("/api/tasks/get?" + queryParams, config).then(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      if (error.response.status === 401) {
+        forceLogoutUser();
+      }
+    }
+  );
 }
 
 export function getPriorities() {
@@ -76,19 +91,64 @@ export async function addTask(data) {
       }
     },
     (error) => {
-      return error.response.data;
+      if (error.response.status === 401) {
+        forceLogoutUser();
+      }
     }
   );
 }
 
 export async function markTaskComplete(id) {
-  return await apiClient.post("/api/tasks/complete/" + id, [], config);
+  return await apiClient.post("/api/tasks/complete/" + id, [], config).then(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      if (error.response.status === 401) {
+        forceLogoutUser();
+      }
+    }
+  );
 }
 
 export async function markTaskPending(id) {
-  return await apiClient.post("/api/tasks/pending/" + id, [], config);
+  return await apiClient.post("/api/tasks/pending/" + id, [], config).then(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      if (error.response.status === 401) {
+        forceLogoutUser();
+      }
+    }
+  );
 }
 
 export async function deleteTask(id) {
-  return await apiClient.delete("/api/tasks/delete/" + id, config);
+  return await apiClient.delete("/api/tasks/delete/" + id, config).then(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      if (error.response.status === 401) {
+        forceLogoutUser();
+      }
+    }
+  );
+}
+
+export async function updateTask(id, data) {
+  return await apiClient.put("/api/tasks/update/" + id, data, config).then(
+    (response) => {
+      if (response.status === 200) {
+        return response.data.data;
+      }
+    },
+    (error) => {
+      if (error.response.status === 401) {
+        forceLogoutUser();
+      }
+      return error.response.data;
+    }
+  );
 }

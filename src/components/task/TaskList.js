@@ -1,17 +1,13 @@
 import Spinner from "../form/fields/Spinner";
-import {
-  deleteTask,
-  getTasks,
-  markTaskComplete,
-  markTaskPending,
-} from "../services/Requests";
-import { useState, useEffect } from "react";
+import { getTasks } from "../services/Requests";
+import { useState } from "react";
+import Task from "./Task";
 
 export default function TaskList() {
-  let [tasks, setTasks] = useState([]);
   let [showLoader, setShowLoader] = useState(false);
+  let [tasks, setTasks] = useState(() => setTaskList());
 
-  function updateTaskList() {
+  function setTaskList() {
     setShowLoader(true);
     getTasks()
       .then((response) => {
@@ -22,46 +18,8 @@ export default function TaskList() {
       .then(() => setShowLoader(false));
   }
 
-  useEffect(() => {
-    updateTaskList();
-  }, []);
-
-  function markTaskCompleted(id) {
-    markTaskComplete(id).then((response) => {
-      if (response.status === 200) {
-        updateItemCompleted(id);
-      }
-    });
-  }
-
-  function markTaskIsPending(id) {
-    markTaskPending(id).then((response) => {
-      if (response.status === 200) {
-        updateItemCompleted(id);
-      }
-    });
-  }
-
-  function removeTask(id) {
-    deleteTask(id).then((response) => {
-      if (response.status === 204) {
-        updateTaskList();
-      }
-    });
-  }
-
-  function updateItemCompleted(id) {
-    const updatedTasks = tasks.map((item) => {
-      if (item.id === id) {
-        const updatedItem = {
-          ...item,
-          completed: !item.completed,
-        };
-        return updatedItem;
-      }
-      return item;
-    });
-    setTasks(updatedTasks);
+  function deleteTaskFromList(id) {
+    setTasks((current) => current.filter((task) => task.id !== id));
   }
 
   return (
@@ -73,74 +31,15 @@ export default function TaskList() {
       {!showLoader && tasks && (
         <ul className="divide-y divide-gray-100">
           {tasks.map((task) => (
-            <li
+            <Task
               key={task.id}
-              className="flex flex-wrap justify-between gap-x-6 py-5"
-            >
-              <div className="flex gap-x-4">
-                <div className="flex-auto">
-                  <p
-                    key={task.id + "name"}
-                    className="text-sm font-semibold leading-6 text-gray-900"
-                  >
-                    {task.name}
-                  </p>
-                  <p
-                    key={task.id + "description"}
-                    className="mt-1 text-xs leading-5 text-gray-500 break-words"
-                  >
-                    {task.description}
-                  </p>
-
-                  <p key={task.id + "created"} className="text-xs">
-                    {"Created: " + task.created}
-                  </p>
-                  <p key={task.id + "updated"} className="text-xs">
-                    {"Updated: " + task.updated}
-                  </p>
-                  <p key={task.id + "priority"} className="text-xs">
-                    {"Priority: " + task.priority.name}
-                  </p>
-                  <div className="text-sm mt-3" key={task.id + "categories"}>
-                    {task.categories.map(function (category) {
-                      return (
-                        <span key={task.id + "categories" + category.name}>
-                          {"@" + category.name + " "}
-                        </span>
-                      );
-                    })}
-                  </div>
-                  <div className="py-4 text-sm" key={task.id + task.completed}>
-                    {!task.completed ? (
-                      <button
-                        onClick={() => markTaskCompleted(task.id)}
-                        className="bg-green-500 cursor-pointer hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                      >
-                        Mark completed
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => markTaskIsPending(task.id)}
-                        className="bg-orange-500 cursor-pointer hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
-                      >
-                        Mark pending
-                      </button>
-                    )}
-                    <span
-                      onClick={() => removeTask(task.id)}
-                      className="text-xs ml-4 cursor-pointer text-red-500  font-bold py-2 px-4 rounded"
-                    >
-                      Delete Task
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="hidden sm:flex sm:flex-col sm:items-end"></div>
-            </li>
+              task={task}
+              onDeleteTask={() => deleteTaskFromList(task.id)}
+            />
           ))}
         </ul>
       )}
-      {!showLoader && tasks.length < 1 && (
+      {!showLoader && tasks && tasks.length < 1 && (
         <p>There are no tasks. Please add a new task</p>
       )}
     </div>

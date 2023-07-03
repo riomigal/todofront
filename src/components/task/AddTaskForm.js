@@ -5,16 +5,17 @@ import TextInput from "../form/fields/TextInput";
 import Button from "../form/fields/Button";
 import Select from "../form/fields/Select";
 import { getPriorities } from "../services/Requests";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Spinner from "../form/fields/Spinner";
+import ValidatorMessage from "../form/validation/ValidatorMessage";
 
 export default function AddTaskForm() {
   const data = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
-  let [priorities, setPriorities] = useState([]);
   let [showLoader, setShowLoader] = useState(false);
+  let [priorities, setPriorities] = useState(() => getPriorityOptions());
 
   function getPriorityOptions() {
     setShowLoader(true);
@@ -27,10 +28,6 @@ export default function AddTaskForm() {
       .then(() => setShowLoader(false));
   }
 
-  useEffect(() => {
-    getPriorityOptions();
-  }, []);
-
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -42,6 +39,7 @@ export default function AddTaskForm() {
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         {!showLoader ? (
           <Form className="space-y-6" method="POST">
+            <ValidatorMessage data={data} />
             <TextInput
               id="name"
               label="Task Name"
