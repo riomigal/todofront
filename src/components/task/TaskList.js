@@ -1,5 +1,10 @@
 import Spinner from "../form/fields/Spinner";
-import { getTasks } from "../services/Requests";
+import {
+  deleteTask,
+  getTasks,
+  markTaskComplete,
+  markTaskPending,
+} from "../services/Requests";
 import { useState, useEffect } from "react";
 
 export default function TaskList() {
@@ -20,6 +25,44 @@ export default function TaskList() {
   useEffect(() => {
     updateTaskList();
   }, []);
+
+  function markTaskCompleted(id) {
+    markTaskComplete(id).then((response) => {
+      if (response.status === 200) {
+        updateItemCompleted(id);
+      }
+    });
+  }
+
+  function markTaskIsPending(id) {
+    markTaskPending(id).then((response) => {
+      if (response.status === 200) {
+        updateItemCompleted(id);
+      }
+    });
+  }
+
+  function removeTask(id) {
+    deleteTask(id).then((response) => {
+      if (response.status === 204) {
+        updateTaskList();
+      }
+    });
+  }
+
+  function updateItemCompleted(id) {
+    const updatedTasks = tasks.map((item) => {
+      if (item.id === id) {
+        const updatedItem = {
+          ...item,
+          completed: !item.completed,
+        };
+        return updatedItem;
+      }
+      return item;
+    });
+    setTasks(updatedTasks);
+  }
 
   return (
     <div className="flex m-auto max-w-5xl flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -48,17 +91,6 @@ export default function TaskList() {
                   >
                     {task.description}
                   </p>
-                  <div className="py-4 text-xs" key={task.id + task.completed}>
-                    {!task.completed ? (
-                      <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                        Mark completed
-                      </button>
-                    ) : (
-                      <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                        Mark pending
-                      </button>
-                    )}
-                  </div>
 
                   <p key={task.id + "created"} className="text-xs">
                     {"Created: " + task.created}
@@ -77,6 +109,29 @@ export default function TaskList() {
                         </span>
                       );
                     })}
+                  </div>
+                  <div className="py-4 text-sm" key={task.id + task.completed}>
+                    {!task.completed ? (
+                      <button
+                        onClick={() => markTaskCompleted(task.id)}
+                        className="bg-green-500 cursor-pointer hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                      >
+                        Mark completed
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => markTaskIsPending(task.id)}
+                        className="bg-orange-500 cursor-pointer hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+                      >
+                        Mark pending
+                      </button>
+                    )}
+                    <span
+                      onClick={() => removeTask(task.id)}
+                      className="text-xs ml-4 cursor-pointer text-red-500  font-bold py-2 px-4 rounded"
+                    >
+                      Delete Task
+                    </span>
                   </div>
                 </div>
               </div>

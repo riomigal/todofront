@@ -76,8 +76,19 @@ export async function addTask(data) {
       }
     },
     (error) => {
-      console.log(error);
       return error.response.data;
     }
   );
+}
+
+export async function markTaskComplete(id) {
+  return await apiClient.post("/api/tasks/complete/" + id, [], config);
+}
+
+export async function markTaskPending(id) {
+  return await apiClient.post("/api/tasks/pending/" + id, [], config);
+}
+
+export async function deleteTask(id) {
+  return await apiClient.delete("/api/tasks/delete/" + id, config);
 }
