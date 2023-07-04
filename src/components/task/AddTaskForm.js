@@ -54,6 +54,7 @@ export default function AddTaskForm() {
             <TextInput
               id="categories"
               label="Categories"
+              pattern="[a-zA-Z0-9\s,]+"
               type="text"
               data={data}
               info="Add comma separated list of categories. E.g.: Work,Project1,..."

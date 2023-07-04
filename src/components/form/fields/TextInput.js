@@ -17,6 +17,7 @@ export default function TextInput(props) {
           name={props.id}
           type={props.type}
           value={value || ""}
+          pattern={props.pattern}
           required={props.required}
           onChange={(e) => setValue(e.target.value)}
           placeholder={props.placeholder || ""}

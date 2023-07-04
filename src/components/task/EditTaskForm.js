@@ -112,9 +112,10 @@ export default function EditTaskForm(props) {
                                   return category.name;
                                 })
                               }
+                              pattern="[a-zA-Z0-9\s,]+"
                               type="text"
                               data={data}
-                              info="Add comma separated list of categories. E.g.: Work,Project1,..."
+                              info="Add comma separated list of categories (Only alphanumeric, comma and whitespace allowed). E.g.: Work,Project1,..."
                             />
                             <Select
                               id="priority_id"
