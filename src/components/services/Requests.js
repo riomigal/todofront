@@ -66,20 +66,36 @@ export async function logout() {
 }
 
 export function getTasks(queryParams = "") {
-  return apiClient.get("/api/tasks/get?" + queryParams, config).then(
+  return apiClient.get("/api/tasks/get" + queryParams, config).then(
     (response) => {
       return response;
     },
     (error) => {
-      if (error.response.status === 401) {
+      if (error.response.status === 401 || error.response.status === 500) {
         forceLogoutUser();
       }
     }
   );
 }
 
-export function getPriorities() {
-  return apiClient.get("/api/priorities/index", config);
+const priorityCache = {};
+export async function getPriorities() {
+  if (!priorityCache.response) {
+    const response = await apiClient.get("/api/priorities/index", config);
+    priorityCache.response = response;
+    return response;
+  }
+  return priorityCache.response;
+}
+
+const categoryCache = {};
+export function getCategories() {
+  if (!categoryCache.response) {
+    const response = apiClient.get("/api/categories/get", config);
+    categoryCache.response = response;
+    return response;
+  }
+  return categoryCache.response;
 }
 
 export async function addTask(data) {
@@ -91,7 +107,7 @@ export async function addTask(data) {
       }
     },
     (error) => {
-      if (error.response.status === 401) {
+      if (error.response.status === 401 || error.response.status === 500) {
         forceLogoutUser();
       }
     }
@@ -104,7 +120,7 @@ export async function markTaskComplete(id) {
       return response;
     },
     (error) => {
-      if (error.response.status === 401) {
+      if (error.response.status === 401 || error.response.status === 500) {
         forceLogoutUser();
       }
     }
@@ -117,7 +133,7 @@ export async function markTaskPending(id) {
       return response;
     },
     (error) => {
-      if (error.response.status === 401) {
+      if (error.response.status === 401 || error.response.status === 500) {
         forceLogoutUser();
       }
     }
@@ -130,7 +146,7 @@ export async function deleteTask(id) {
       return response;
     },
     (error) => {
-      if (error.response.status === 401) {
+      if (error.response.status === 401 || error.response.status === 500) {
         forceLogoutUser();
       }
     }
@@ -145,7 +161,7 @@ export async function updateTask(id, data) {
       }
     },
     (error) => {
-      if (error.response.status === 401) {
+      if (error.response.status === 401 || error.response.status === 500) {
         forceLogoutUser();
       }
       return error.response.data;

@@ -1,6 +1,6 @@
 export default function Button(props) {
   return (
-    <div>
+    <div className="mt-2">
       <button
         disabled={props.isSubmitting}
         type="submit"

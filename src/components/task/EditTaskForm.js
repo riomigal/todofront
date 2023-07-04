@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Form } from "react-router-dom";
 import TextInput from "../form/fields/TextInput";
@@ -12,20 +12,16 @@ import ValidatorMessage from "../form/validation/ValidatorMessage";
 export default function EditTaskForm(props) {
   const cancelButtonRef = useRef(null);
   let [isSubmitting, setIsSubmitting] = useState(false);
-  let [showLoader, setShowLoader] = useState(false);
-  let [priorities, setPriorities] = useState(() => getPriorityOptions());
+  let [priorities, setPriorities] = useState({});
   let [data, setData] = useState([]);
 
-  function getPriorityOptions() {
-    setShowLoader(true);
-    getPriorities()
-      .then((response) => {
-        if (response.status === 200) {
-          setPriorities(response.data.data);
-        }
-      })
-      .then(() => setShowLoader(false));
-  }
+  useEffect(() => {
+    async function getPriorityOptions() {
+      const response = await getPriorities();
+      setPriorities(response.data.data);
+    }
+    getPriorityOptions();
+  }, []);
 
   async function update(e) {
     setIsSubmitting(true);
@@ -83,7 +79,7 @@ export default function EditTaskForm(props) {
                         Edit task
                       </Dialog.Title>
                       <div className="mt-2">
-                        {!showLoader ? (
+                        {priorities.length ? (
                           <Form
                             className="space-y-6"
                             method="POST"

@@ -18,13 +18,14 @@ export default function Select(props) {
           defaultValue={props.selectedId}
         >
           <option value="">{props.optionText}</option>
-          {props.options.map(function (option) {
-            return (
-              <option value={option.id} key={option.id}>
-                {option.name}
-              </option>
-            );
-          })}
+          {props.options &&
+            props.options.map(function (option) {
+              return (
+                <option value={option.id} key={option.id}>
+                  {option.name}
+                </option>
+              );
+            })}
         </select>
       </div>
       {props.data ? <Validator data={props.data} name={props.id} /> : <></>}

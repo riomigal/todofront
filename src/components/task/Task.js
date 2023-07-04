@@ -56,13 +56,13 @@ export default function Task(props) {
         <div className="flex-auto">
           <p
             key={task.id + "name"}
-            className="text-sm font-semibold leading-6 text-gray-900"
+            className="text-lg font-semibold leading-6 text-gray-900"
           >
             {name}
           </p>
           <p
             key={task.id + "description"}
-            className="my-3 text-sm leading-5 text-gray-500 break-words"
+            className="my-3 text-md leading-5 text-gray-700 break-words"
           >
             {description}
           </p>
@@ -79,7 +79,10 @@ export default function Task(props) {
           <div className="text-sm mt-3" key={task.id + "categories"}>
             {categories.map(function (category) {
               return (
-                <span key={task.id + "categories" + category.name}>
+                <span
+                  className="inline-block rounded whitespace-nowrap p-1 mx-2 text-sm  text-white bg-blue-600"
+                  key={task.id + "categories" + category.name}
+                >
                   {"@" + category.name + " "}
                 </span>
               );
@@ -101,26 +104,27 @@ export default function Task(props) {
                 Mark pending
               </button>
             )}
+            <button
+              onClick={() => {
+                setTask(task);
+                setShowEditModal(true);
+              }}
+              className="bg-orange-500 cursor-pointer mx-2 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Edit Task
+            </button>
             <span
               onClick={removeTask}
               className="text-xs ml-4 cursor-pointer text-red-500  font-bold py-2 px-4 rounded"
             >
               Delete Task
             </span>
-            <button
-              onClick={() => {
-                setTask(task);
-                setShowEditModal(true);
-              }}
-              className="bg-orange-500 cursor-pointer hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Edit Task
-            </button>
             <EditTaskForm
               open={showEditModal}
               close={() => setShowEditModal(false)}
               item={getTask()}
               onUpdateTask={(item) => updateTask(item)}
+              priorities={props.priorities}
             />
           </div>
         </div>
